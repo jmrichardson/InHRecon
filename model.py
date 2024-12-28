@@ -100,6 +100,7 @@ class ClusterNet(nn.Module):
         x = self.fc1(x)
         x = F.relu(x)
         action_value = self.out(x)
+        print(f"OpNet forward: input shape={x.shape}")
         return action_value
     
 
@@ -581,10 +582,13 @@ class OpNet(nn.Module):
 
     def __init__(self, N_STATES, N_ACTIONS, N_HIDDEN, init_w, device):
         super(OpNet, self).__init__()
+        print(f"OpNet init: N_STATES={N_STATES}, N_ACTIONS={N_ACTIONS}, N_HIDDEN={N_HIDDEN}")
         self.device = device
         self.fc1 = nn.Linear(N_STATES, N_HIDDEN) #N_HIDDEN
         self.fc1.weight.data.normal_(0, init_w)
         self.out = nn.Linear(N_HIDDEN, N_ACTIONS)
+        print(f"fc1 weight shape: {self.fc1.weight.shape}")
+        print(f"out weight shape: {self.out.weight.shape}")
         self.out.weight.data.normal_(0, init_w)
 
     def forward(self, x):

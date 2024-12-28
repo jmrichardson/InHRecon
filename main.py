@@ -80,6 +80,7 @@ class FeatureTransformer(BaseEstimator, TransformerMixin):
         mem_1_dim = STATE_DIM
         mem_op_dim = STATE_DIM
         self.logger.info(f'initial memories with {self.replay_strategy}')
+        print(f"mem_1_dim: {mem_1_dim}")
         BATCH_SIZE = self.batch_size
         MEMORY_CAPACITY = self.memory
         ENV.report_performance(Dg, D_OPT)
