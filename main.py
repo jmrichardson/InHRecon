@@ -73,7 +73,7 @@ class FeatureTransformer(BaseEstimator, TransformerMixin):
         self.logger.info('initialize the features.....')
         self.logger.info(Dg.info())
         D_OPT = Dg.copy()
-        hidden = 128  # Assuming a default hidden size, can be parameterized
+        hidden = 64  # Assuming a default hidden size, can be parameterized
 
         OP_DIM = len(operation_set)
         STATE_DIM = hidden
