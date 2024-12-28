@@ -94,7 +94,7 @@ class FeatureTransformer(BaseEstimator, TransformerMixin):
         LR = 0.001
         model_op = OpDQNNetwork(state_dim=STATE_DIM, cluster_state_dim=STATE_DIM, hidden_dim=STATE_DIM*2,
                                 memory=op_mem,
-                                ent_weight=ENT_WEIGHT, gamma=0.99, batch_size=BATCH_SIZE, device=self.cuda_info, init_w=self.init_w, state_dim=mem_1_dim)
+                                ent_weight=ENT_WEIGHT, gamma=0.99, batch_size=BATCH_SIZE, device=self.cuda_info, init_w=self.init_w)
 
         model_cluster1 = ClusterDQNNetwork(state_dim=STATE_DIM + OP_DIM, cluster_state_dim=STATE_DIM,
                                            hidden_dim=(STATE_DIM + OP_DIM)*2,
