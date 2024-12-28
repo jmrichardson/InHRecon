@@ -456,7 +456,6 @@ class ClusterDQNNetwork(DQNNetwork):
                 # acts_1 = sorted_indices[-1]
                 # acts_2 = sorted_indices[-2]
                 acts = np.argmax(q_vals)
-                print('HEAD EXPLOITATION')
                 # if op in cat_num_ops or op in cat_cat_ops:
                 #     cat_indices = [i for i, dt in enumerate(Dg.dtypes[:-1]) if dt == 'category']
                 #     if len(cat_indices) > 0:
@@ -474,7 +473,6 @@ class ClusterDQNNetwork(DQNNetwork):
                 # else:
                 #     acts = np.random.choice(len(q_vals[0]))    
             else:
-                print("head exploration")
                 # if op in cat_cat_ops or op in cat_num_ops:
                 #     # Find all categorical feature indices
                 #     cat_indices = [i for i, dtype in enumerate(Dg.dtypes[:-1]) if dtype == 'category']
@@ -516,7 +514,6 @@ class ClusterDQNNetwork(DQNNetwork):
         else:
             if np.random.uniform() > eps_threshold:
                 acts = np.argmax(q_vals)
-                print('TAIL EXPLOITATION')
             # if np.random.uniform() > eps_threshold:
             #     print('TAIL EXPLOITATION')
             #     if op in cat_cat_ops:
@@ -534,7 +531,6 @@ class ClusterDQNNetwork(DQNNetwork):
             #         else:
             #             acts = np.random.choice(len(q_vals[0]))   
             else:
-                print('tail exploration')
                 acts = np.random.randint(0, len(clusters))
                 # if op in cat_cat_ops:
                 #     # Find all categorical feature indices
