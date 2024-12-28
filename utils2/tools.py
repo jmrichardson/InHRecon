@@ -453,7 +453,7 @@ def calc_h_stat_reg(model, X, feats):
     def compute_f_vals_sklearn(model, X, feats=None, grid_resolution=10):
 
         def _pd_to_df(pde, feature_names):
-            a = pde['values']
+            a = pde['feature_values']
             df = pd.DataFrame(cartesian_product(*a))
             rename = {i: feature_names[i] for i in range(len(feature_names))}
             df.rename(columns=rename, inplace=True)
