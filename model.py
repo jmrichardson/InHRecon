@@ -610,7 +610,6 @@ class OpDQNNetwork(DQNNetwork):
         self.eval_net, self.target_net = OpNet(state_dim, OP_DIM, hidden_dim, init_w, device), \
                                     OpNet(state_dim, OP_DIM, hidden_dim, init_w, device)
     def forward(self, cluster_state, for_next=False):
-        
         print(f"OpDQNNetwork forward: input shape={cluster_state.shape}")
         if for_next:
             return self.target_net.forward(cluster_state)
