@@ -605,9 +605,8 @@ class OpDQNNetwork(DQNNetwork):
                                             memory, ent_weight, EPS_START=EPS_START, EPS_END=EPS_END,
                                             EPS_DECAY=EPS_DECAY, init_w=init_w)
 
-        self.eval_net, self.target_net = OpNet(self.state_dim, OP_DIM, self.state_dim, init_w, device), \
-                                    OpNet(self.state_dim, OP_DIM, self.state_dim, init_w, device)
-
+       self.eval_net, self.target_net = OpNet(self.state_dim, OP_DIM, self.hidden_dim, init_w, device), \
+                                   OpNet(self.state_dim, OP_DIM, self.hidden_dim, init_w, device)
     def forward(self, cluster_state, for_next=False):
         if for_next:
             return self.target_net.forward(cluster_state)
