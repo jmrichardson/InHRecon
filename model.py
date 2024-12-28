@@ -590,8 +590,9 @@ class OpNet(nn.Module):
         print(f"fc1 weight shape: {self.fc1.weight.shape}")
         print(f"out weight shape: {self.out.weight.shape}")
         self.out.weight.data.normal_(0, init_w)
-
+ 
     def forward(self, x):
+        print(f"OpNet forward: input shape={x.shape}")
         x = x.to(self.device)
         x = self.fc1(x)
         x = F.relu(x)
@@ -605,9 +606,11 @@ class OpDQNNetwork(DQNNetwork):
                                             memory, ent_weight, EPS_START=EPS_START, EPS_END=EPS_END,
                                             EPS_DECAY=EPS_DECAY, init_w=init_w)
 
+        print(f"OpDQNNetwork init: state_dim={self.state_dim}, cluster_state_dim={self.cluster_state_dim}, hidden_dim={self.hidden_dim}")
         self.eval_net, self.target_net = OpNet(self.state_dim, OP_DIM, self.hidden_dim, init_w, device), \
                                     OpNet(self.state_dim, OP_DIM, self.hidden_dim, init_w, device)
     def forward(self, cluster_state, for_next=False):
+        print(f"OpDQNNetwork forward: input shape={cluster_state.shape}")
         if for_next:
             return self.target_net.forward(cluster_state)
         else :
