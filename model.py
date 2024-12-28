@@ -606,10 +606,11 @@ class OpDQNNetwork(DQNNetwork):
                                             memory, ent_weight, EPS_START=EPS_START, EPS_END=EPS_END,
                                             EPS_DECAY=EPS_DECAY, init_w=init_w)
 
-        print(f"OpDQNNetwork init: state_dim={self.state_dim}, cluster_state_dim={self.cluster_state_dim}, hidden_dim={self.hidden_dim}")
-        self.eval_net, self.target_net = OpNet(self.state_dim, OP_DIM, self.hidden_dim, init_w, device), \
-                                    OpNet(self.state_dim, OP_DIM, self.hidden_dim, init_w, device)
+        print(f"OpDQNNetwork init: state_dim={state_dim}, cluster_state_dim={cluster_state_dim}, hidden_dim={hidden_dim}")
+        self.eval_net, self.target_net = OpNet(state_dim, OP_DIM, hidden_dim, init_w, device), \
+                                    OpNet(state_dim, OP_DIM, hidden_dim, init_w, device)
     def forward(self, cluster_state, for_next=False):
+        
         print(f"OpDQNNetwork forward: input shape={cluster_state.shape}")
         if for_next:
             return self.target_net.forward(cluster_state)
