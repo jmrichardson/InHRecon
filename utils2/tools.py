@@ -21,8 +21,6 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics.pairwise import pairwise_distances
-from sklearn.model_selection import KFold
-from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
@@ -32,7 +30,53 @@ from sklearn.inspection import partial_dependence
 import itertools
 from statistics import mode
 
+
 from .logger import error, info
+
+
+from sklearn.model_selection import GroupKFold
+import numpy as np
+
+
+class GroupGapSingle(GroupKFold):
+    def __init__(self, test_size=0.3, gap=5):
+        self.n_splits = 1
+        self.test_size = test_size
+        self.gap = gap
+
+    def split(self, X, y=None):
+        if 'era' not in X.columns:
+            raise ValueError("The input X must have an 'era' column to define groups.")
+
+        groups = X['era'].values
+        unique_groups = np.unique(groups)
+        n_groups = len(unique_groups)
+
+        if isinstance(self.test_size, float) and self.test_size < 1.0:
+            test_size_groups = max(1, int(self.test_size * n_groups))
+        elif isinstance(self.test_size, int):
+            test_size_groups = self.test_size
+        else:
+            raise ValueError("Test size must be a float < 1.0 or an integer.")
+
+        if test_size_groups >= n_groups:
+            raise ValueError("Test size must be smaller than the number of unique groups.")
+
+        test_start_idx = n_groups - test_size_groups
+        train_end_idx = max(0, test_start_idx - self.gap)
+
+        train_groups = unique_groups[:train_end_idx]
+        test_groups = unique_groups[test_start_idx:]
+
+        train_idx = np.where(np.isin(groups, train_groups))[0]
+        test_idx = np.where(np.isin(groups, test_groups))[0]
+
+        # Yield only a single split to satisfy the single split requirement
+        yield train_idx, test_idx
+
+    def get_n_splits(self, X=None, y=None):
+        return self.n_splits
+
 
 def cube(x):
     return x ** 3
@@ -222,7 +266,7 @@ def downstream_task_new(data, task_type):
     if task_type == 'cls':
         clf = RandomForestClassifier(random_state=0)
         f1_list = []
-        skf = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
+        skf = GroupGapSingle(test_size=.3)
         for train, test in skf.split(X, y):
             X_train, y_train, X_test, y_test = X.iloc[train, :], y.iloc[train
             ], X.iloc[test, :], y.iloc[test]
@@ -231,7 +275,7 @@ def downstream_task_new(data, task_type):
             f1_list.append(f1_score(y_test, y_predict, average='weighted'))
         return clf, np.mean(f1_list)
     elif task_type == 'reg':
-        kf = KFold(n_splits=5, random_state=0, shuffle=True)
+        kf = GroupGapSingle(test_size=.3)
         reg = RandomForestRegressor(random_state=0)
         rae_list = []
         for train, test in kf.split(X):
@@ -319,7 +363,7 @@ def test_task_new(Dg, task='cls', state_num = 10):
     if task == 'cls':
         clf = RandomForestClassifier(random_state=0)
         pre_list, rec_list, f1_list = [], [], []
-        skf = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
+        skf = GroupGapSingle(test_size=.3)
         for train, test in skf.split(X, y):
             X_train, y_train, X_test, y_test = X.iloc[train, :], y.iloc[train
             ], X.iloc[test, :], y.iloc[test]
@@ -332,7 +376,7 @@ def test_task_new(Dg, task='cls', state_num = 10):
             f1_list.append(f1_score(y_test, y_predict, average='weighted'))
         return np.mean(pre_list), np.mean(rec_list), np.mean(f1_list)
     elif task == 'reg':
-        kf = KFold(n_splits=5, random_state=0, shuffle=True)
+        kf = GroupGapSingle(test_size=.3)
         reg = RandomForestRegressor(random_state=0)
         mae_list, mse_list, rae_list = [], [], []
         for train, test in kf.split(X):

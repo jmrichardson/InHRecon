@@ -16,7 +16,8 @@ TASK_DICT = {'airfoil': 'reg', 'amazon_employee': 'cls', 'ap_omentum_ovary': 'cl
              'spam_base': 'cls', 'spectf': 'cls', 'svmguide3': 'cls',
              'uci_credit_card': 'cls', 'wine_red': 'cls', 'wine_white': 'cls',
              'openml_586': 'reg', 'openml_589': 'reg', 'openml_607': 'reg',
-             'openml_616': 'reg', 'openml_618': 'reg', 'openml_637': 'reg'
+             'openml_616': 'reg', 'openml_618': 'reg', 'openml_637': 'reg',
+             'numerai': 'reg',
              }
 
 MEASUREMENT = {

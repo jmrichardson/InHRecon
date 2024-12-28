@@ -282,10 +282,69 @@ class FeatureTransformer(BaseEstimator, TransformerMixin):
         D_OPT.to_csv(os.path.join(D_OPT_PATH, out_name))
         self.D_OPT = D_OPT
 
-# Example usage:
-# transformer = FeatureTransformer(name='task1', episodes=10, steps=100, enlarge_num=2, batch_size=32,
-#                                  memory=1000, ablation_mode='mode1', replay_strategy='random',
-#                                  ent_weight=0.1, init_w=0.01, a=1.0, b=1.0, c=1.0,
-#                                  out_put='output_features', log_level='INFO')
-# transformer.fit(df)
-# new_features = transformer.transform(df_new)
+
+if __name__ == "__main__":
+
+    # Set random seed for reproducibility
+    np.random.seed(42)
+
+    num_rows = 10000
+    num_features = 50
+    num_eras = 10
+
+    # Generate feature columns
+    feature_data = np.random.randint(0, 5, size=(num_rows, num_features))
+    feature_columns = [f'feature_{i + 1}' for i in range(num_features)]
+    df_features = pd.DataFrame(feature_data, columns=feature_columns)
+
+    # Generate a single target column
+    target_data = np.random.rand(num_rows)
+    # Bin the target values into 0, 0.25, 0.5, 0.75, 1
+    target_binned = np.floor(target_data * 4) / 4
+    df_targets = pd.DataFrame({'target_cyrusd_20': target_binned})
+
+    # Generate era column, evenly dividing rows
+    eras = np.tile(np.arange(1, num_eras + 1), num_rows // num_eras)
+    remaining = num_rows % num_eras
+    if remaining > 0:
+        eras = np.concatenate([eras, np.arange(1, remaining + 1)])
+    df_eras = pd.DataFrame({'era': eras})
+
+    # Combine all into a single DataFrame
+    df = pd.concat([df_eras, df_features, df_targets], axis=1)
+
+    # Sort by era and reset index
+    df = df.sort_values(by='era').reset_index(drop=True)
+    df = df.astype({col: 'float32' for col in df.select_dtypes(include=['int32']).columns})
+
+    # Display the first few rows of the synthetic data
+    print("Synthetic Data Sample:")
+    print(df.head())
+
+    # Verify era distribution
+    print("\nEra Distribution:")
+    print(df['era'].value_counts().sort_index())
+
+    # Initialize the FeatureTransformer with example parameters
+    transformer = FeatureTransformer(
+        name='numerai',
+        episodes=2,               # Number of training episodes
+        steps=5,                 # Steps per episode
+        enlarge_num=2,             # Factor to enlarge the number of features
+        batch_size=32,             # Batch size for training
+        memory=1000,               # Replay memory size
+        ablation_mode='none',      # Example ablation mode
+        replay_strategy='random',  # Replay strategy
+        ent_weight=0.1,            # Entropy weight
+        init_w=0.01,               # Initial weight
+        a=1.0,                     # Reward scaling factor for operation
+        b=1.0,                     # Reward scaling factor for cluster 1
+        c=1.0,                     # Reward scaling factor for cluster 2
+        out_put='output_features', # Output filename prefix
+        log_level='INFO'           # Logging level
+    )
+
+    # Fit the transformer on the synthetic data
+    transformer.fit(df)
+
+    print("done")

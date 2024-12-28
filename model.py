@@ -116,7 +116,8 @@ class DQNNetwork(nn.Module):
         self.GAMMA = gamma
         self.BATCH_SIZE = batch_size
         self.ENT_WEIGHT = ent_weight
-        self.cuda_info = device is not None
+        # self.cuda_info = device is not None
+        self.cuda_info = False
         self.operation_emb = dict()
         self.memory = memory
         self.learn_step_counter = 0
