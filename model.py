@@ -582,7 +582,7 @@ class OpNet(nn.Module):
     def __init__(self, N_STATES, N_ACTIONS, N_HIDDEN, init_w, device):
         super(OpNet, self).__init__()
         self.device = device
-        self.fc1 = nn.Linear(N_STATES, N_HIDDEN)
+        self.fc1 = nn.Linear(N_STATES, N_HIDDEN) #N_HIDDEN
         self.fc1.weight.data.normal_(0, init_w)
         self.out = nn.Linear(N_HIDDEN, N_ACTIONS)
         self.out.weight.data.normal_(0, init_w)
